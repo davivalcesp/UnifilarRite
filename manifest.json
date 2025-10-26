@@ -1,7 +1,9 @@
 {
+  "id": "com.unifilarrite.app",
   "name": "Esquema Unifilar Pro",
   "short_name": "EsquemaPro",
   "description": "Diseña esquemas unifilares eléctricos con validación REBT/IEC",
+  "categories": ["utilities", "productivity"],
   "start_url": "/UnifilarRite/index.html",
   "scope": "/UnifilarRite/",
   "display": "standalone",
