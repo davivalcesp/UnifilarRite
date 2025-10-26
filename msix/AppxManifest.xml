@@ -4,10 +4,10 @@
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="YourCompany.UnifilarRite" Publisher="CN=YourPublisher" Version="1.0.0.0" />
+  <Identity Name="com.davivalcesp.unifilarrite" Publisher="CN=3a54a224-05dd-42aa-85bd-3f3c1478fdca" Version="1.0.0.0" />
   <Properties>
     <DisplayName>Esquema Unifilar Pro</DisplayName>
-    <PublisherDisplayName>Your Company</PublisherDisplayName>
+    <PublisherDisplayName>David Valdivia Cespedes</PublisherDisplayName>
     <Logo>ms-appx:///icon/icon-512.png</Logo>
   </Properties>
   <Dependencies>
