@@ -1,0 +1,104 @@
+{
+  "name": "Esquema Unifilar Pro",
+  "short_name": "EsquemaPro",
+  "description": "Diseña esquemas unifilares eléctricos con validación REBT/IEC",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d47a1",
+  "orientation": "landscape-primary",
+  "prefer_related_applications": false,
+    "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+    "related_applications": [
+      {
+        "platform": "windows",
+        "url": "ms-windows-store://pdp/?productid=UnifilarRiteApp",
+        "id": "UnifilarRiteApp"
+      },
+      {
+        "platform": "play",
+        "url": "https://play.google.com/store/apps/details?id=com.unifilarrite.app",
+        "id": "com.unifilarrite.app"
+      }
+    ],
+    "display_override": ["window-controls-overlay"],
+    "window-controls-overlay": {
+      "color": "#0d47a1"
+    },
+      "protocol_handlers": [
+        {
+          "protocol": "web+esquemapro",
+          "url": "./?esquema=%s"
+        }
+      ],
+  "shortcuts": [
+    {
+      "name": "Nuevo esquema",
+      "short_name": "Nuevo",
+      "url": "./?action=new",
+      "icons": [{ "src": "icon/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "images/screenshot1.png",
+      "type": "image/png",
+      "sizes": "1280x720",
+      "form_factor": "wide",
+      "label": "Editor de esquemas unifilares"
+    },
+    {
+      "src": "images/screenshot2.png",
+      "type": "image/png",
+      "sizes": "1280x720",
+      "form_factor": "wide",
+      "label": "Validación REBT/IEC"
+    },
+    {
+      "src": "images/screenshot3.png",
+      "type": "image/png",
+      "sizes": "430x932",
+      "form_factor": "narrow",
+      "label": "Vista móvil del editor"
+    }
+  ],
+  "icons": [
+    {
+      "src": "icon/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icon/icon-256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icon/icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

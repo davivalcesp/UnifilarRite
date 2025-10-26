@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DraftEC - David Valdivia Cespedes</title>
+	<!-- Manifest -->
+<link rel="manifest" href="/manifest.json">
+<!-- Tema para m��viles -->
+<meta name="theme-color" content="#0d47a1">
+<!-- Apple PWA support -->
+<link rel="apple-touch-icon" href="icon/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EsquemaPro">
+        <style>
+            /* Estilos explícitos para el botón de instalación PWA */
+            #btnInstall {
+                position: fixed !important;
+                bottom: 20px !important;
+                right: 20px !important;
+                z-index: 99999 !important;
+                padding: 10px 16px !important;
+                background: #0d47a1 !important;
+                color: #ffffff !important;
+                border: none !important;
+                border-radius: 8px !important;
+                cursor: pointer !important;
+                box-shadow: 0 6px 18px rgba(13,71,161,0.25) !important;
+                font-weight: 600 !important;
+                font-family: inherit !important;
+                display: inline-block !important;
+            }
+            #btnInstall:active { transform: translateY(1px); }
+        </style>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/all.css">
+    <link rel="stylesheet" href="css/all.min.css">
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    
+    
+  
+
+</head>
+<body>
+    <div id="calculoResultadosPanel">
+        <div class="resultados-header">
+            <i class="fas fa-bolt"></i> Calculo suministro
+        </div>
+        <div id="resultadoCalculoPanel"></div>
+		 <div id="statusMessage"></div>
+         <div id="advertenciaSeccion"></div>
+		<div id="teblaResultadosRCD"></div>
+        <!-- Panel izquierdo para la lista de objetos -->
+		<h6>Red de baja tensión</h6>
+<div id="objectsListPanel" style="width:230px; min-height:300px; background:#ffffff; border-right:1px solid #ddd; padding:10px; overflow-y:auto;">
+    <h6 style="margin-top:0; font-size:10px;">Componentes&nbsp;</h6>
+    <!-- La lista se genera dinámicamente -->
+</div>
+    </div>
+	
+    <div class="app-container" style="margin-left:260px;">
+       
+       
+        <!-- Área principal ---------------------------------->
+        <div class="main-area">
+            <!-- Barra de herramientas superior -->
+            <div class="main-toolbar">
+                
+                <div class="tool-section">
+                    <button id="drawTool" class="tool-btn active" title="Linea (D)">
+                         Line
+                    </button>
+                    <button id="moveTool" class="tool-btn" title="Mover (M)">
+                         Move
+                    </button>
+                    <button id="ellipseTool" class="tool-btn" title="Elipse (E)">
+                         Arc
+                    </button>
+                    <button id="selectTool" class="tool-btn" title="Editar Propiedades (S)">
+                        Seleccionar
+                    </button>
+                    <button id="connectTool" class="tool-btn" title="Conectar (C)">
+                        Conectar
+                    </button>
+                   
+                    
+                    <button id="btnMemoria" class="tool-btn">📄 Memoria PDF</button>
+					
+                    
+			
+<div class="file-menu">
+    <button class="tool-btn" id="fileMenuBtn">Archivo</button>
+</div>
+
+<!-- Modal del menú de archivo -->
+<div class="file-modal" id="fileModalMenu">
+    <div class="file-modal-content">
+        <div class="file-modal-header">
+            <h3>Menú Archivo</h3>
+            <span class="file-modal-close">&times;</span>
+        </div>
+        <div class="file-modal-body">
+           
+            
+            <!-- Sección de herramientas -->
+            <div class="tool-section2">
+                <div class="texto1"><h5>Color:</h5></div>
+                <input type="color" id="colorPicker" value="#FFFFFF" title="Color de línea">
+
+                <div class="texto2"><h5>Grosor:</h5></div>
+                <select id="lineWidth" title="Grosor de línea">
+                    <option value="1">1px</option>
+                    <option value="2" selected>2px</option>
+                    <option value="3">3px</option>
+                    <option value="4">4px</option>
+                </select>
+
+                <div class="texto3"><h5>Tipo línea:</h5></div>
+                <select id="lineType" title="Tipo de línea">
+                    <option value="solid">Continua</option>
+                    <option value="dashed">Discontinua</option>
+                    <option value="dotted">Punteada</option>
+                </select>
+
+                <div class="texto4"><h5>Guías:</h5></div>
+                <input type="checkbox" id="showGuides" checked>
+
+                <div class="texto5"><h5>Cuadrículas:</h5></div>
+                <input type="checkbox" id="showGrid" checked>
+
+                <div class="texto6"><h5>Snap grid:</h5></div>
+                <input type="checkbox" id="snapToGrid" checked>
+
+                <div class="texto7"><h5>Tamaño de guía:</h5></div>
+                <input type="number" id="gridSize" min="10" max="60" value="20">
+            </div>
+        </div>
+        <div class="file-modal-footer">
+            <button class="btn btn-primary" id="fileModalCloseBtn">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+                    <button id="undoBtn" class="tool-btn" title="Deshacer (Ctrl+Z)">
+                         Deshacer
+                    </button>
+                    <button id="redoBtn" class="tool-btn" title="Rehacer (Ctrl+Y)">
+                        Rehacer
+                    </button>
+                    <button id="clearCanvas" class="tool-btn" title="Limpiar lienzo">
+                         Limpiar
+                    </button>
+                    <button id="deleteImage" class="tool-btn" title="Delete Objeto">Delete objeto</button>
+
+                    <button id="saveImage" class="tool-btn" title="Guardar como Imagen">
+                       Guardar Imagen webI
+                    </button>
+                    <button id="exportPngBtn" class="tool-btn" title="Exportar PNG">Guardar como PNG</button>
+				<button id="updateSWBtn" class="tool-btn" title="Buscar actualizaciones">Buscar actualizaciones</button>
+					<button id="CalcularTool" class="tool-btn" title="Calcular">
+                        <i class="fas fa-calculator"></i> Calcular Suministro
+                    </button>
+
+                 <button id="calcularRCDBtn" class="tool-btn" title="Calcular RCDs">
+                       <i class="fas fa-calculator"></i> Calcular RCDs
+                       </button>
+
+               
+                 </div>
+				
+				
+				
+			</div>
+           
+	
+            
+            <!-- Barra de componentes inferior -->
+            <div class="components-toolbar">
+                <div class="components-scroll">
+                    <button class="component-btn" data-id="supply" title="Suministro"><img src="icon/icon_Supply.png" width="24" height="24"><span class="icon-label">Suministro</span></button>
+                    <button class="component-btn" data-id="CGP" title="Caja Proteccion"><img src="icon/icon_Fucible.png" width="24" height="24"><span class="icon-label">Proteccion</span></button>
+                    <button class="component-btn" data-id="breaker" title="Magnetotérmico"><img src="icon/icon_breaker.png"><span class="icon-label">Línea&nbsp;</span></button>
+                    
+                    <button class="component-btn" data-id="rcd" title="Diferencial"><img src="icon/icon_RCD.png"><span class="icon-label">Agrupación&nbsp;</span></button>
+                    <button class="component-btn" data-id="contactorNO" title="Contactor NO"><img src="icon/icon_contac_NO.png"><span class="icon-label">Contactor No</span></button>
+                    <button class="component-btn" data-id="contactorNA" title="Contactor NA"><img src="icon/icon_contac_NA.png"><span class="icon-label">Contactor NA</span></button>
+                    <button class="component-btn" data-id="seccionador" title="Seccionador"><img src="icon/icon_seccionador.png"><span class="icon-label">Seccionador</span></button>
+                    <button class="component-btn" data-id="Stension" title="SobreTensiones"><img src="icon/icon_Stensiones.png"><span class="icon-label">S.Tensiones</span></button>
+                    <button class="component-btn" data-id="conmutador" title="Conmutador"><img src="icon/icon_swinth.png"><span class="icon-label">Conmutada&nbsp;</span></button>
+                    <button class="component-btn" data-id="Grupo" title="Grupo"><img src="icon/icon_Grupo.png"><span class="icon-label">Grupo</span></button>
+                    <button class="component-btn" data-id="Contador" title="Contador"><img src="icon/icon_Contador.png"><span class="icon-label">Contador</span></button>
+                    <button class="component-btn" data-id="Relog" title="Temporizador"><img src="icon/icon_timer.png"><span class="icon-label">Temporizador</span></button>
+                    <button class="component-btn" data-id="SAI" title="SAI UPS"><img src="icon/icon_SAI.png"><span class="icon-label">SAI UPS</span></button>
+                    <button class="component-btn" data-id="Bcondesa" title="Bateria Condensadores"><img src="icon/icon_BateriaCondensadores.png"><span class="icon-label">capacitors</span></button>
+                    <button class="component-btn" data-id="tranfo" title="Transformador"><img src="icon/icon_Tranfo.png" alt="Tranfo"><span class="icon-label">Tranformador BT/BT</span></button>
+
+                </div>
+            </div>
+            
+            <!-- Área de dibujo -->
+           <div class="drawing-container">
+                <div class="drawing-area" id="drawingArea">
+                    <canvas id="drawingCanvas"></canvas>
+                    <div class="grid-overlay" id="gridOverlay"></div>
+                </div>
+            </div>
+            </div>
+		
+		
+		 <!-- Modal de propiedades (nuevo) ----------------------------->
+		 <div class="properties-modal" id="propertiesModal">
+            <div class="properties-modal-header">
+                <span id="propertiesModalTitle">Propiedades</span>
+               <!-- <button class="close" id="closePropertiesModal">&times;</button>-->
+            </div>
+            <div class="properties-modal-content">
+                <div id="imageProperties">
+                   
+                    <!-- Propiedades para Suministro -->
+                    <div class="property-group supply-props">
+                        <h5>Propiedades Suministro</h5>
+                        <div class="property-row">
+                            <label>Tensión</label>
+                            <select id="supplyVoltage" class="intensity-selector">                             
+                               
+                                <option value="220V">220V</option>
+                                <option value="230V">230V</option>
+                                <option value="380V">380V</option>
+                                <option value="400V">400V</option>
+                               
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Fases</label>
+                            <select id="supplyPolarity" class="intensity-selector">                                
+                               
+                                <option value="F+N">F+N</option>
+                                <option value="F+F">F+F</option>
+                                <option value="F3">F3</option>
+                                <option value="F3+N">F3+N</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Sección</label>
+                            <select id="supplySection" class="intensity-selector">                                
+                                <option value=" 2 x (1.5 +Tt 1.5mm2)">2 x (1.5 +Tt 1.5mm2)</option>
+                                <option value=" 2 x (2.5 +Tt 2.5mm2)">2 x (2.5 +Tt 2.5mm2)</option>
+                                <option value=" 2 x (4 + Tt 4mm2)">2 x (4 + Tt 4mm2)</option>
+                                <option value=" 2 x (6 + Tt 6mm2)">2 x (6 + Tt 6mm2)</option>
+                                <option value=" 2 x (10 + Tt 10mm2)">2 x (10 + Tt 10mm2)</option>
+                                <option value=" 2 x (16 + Tt 16mm2)">2 x (16 + Tt 16mm2)</option>
+                                <option value=" 2 x (25 + Tt 25mm2)">2 x (25 + Tt 25mm2)</option>
+                                <option value=" 2 x (35 + Tt 35mm2)">2 x (35 + Tt 35mm2)</option>
+                                <option value=" 2 x (50 + Tt 50mm2)">2 x (50 + Tt 50mm2)</option>
+                                <option value=" 2 x (70 + Tt 70mm2)">2 x (70 + Tt 70mm2)</option>
+                                <option value=" 2 x (95 + Tt 95mm2)">2 x (95 + Tt 95mm2)</option>
+                                <option value=" 2 x (120 + Tt 120mm2)">2 x (120 + Tt 120mm2)</option>
+                                 <option value=" 3 x (1.5 + Tt 1.5mm2)">3 x (1.5 + Tt 1.5mm2)</option>
+                                <option value=" 3 x (2.5 + Tt 2.5mm2)">3 x (2.5 + Tt 2.5mm2)</option>
+                                <option value=" 3 x (4 + Tt 4mm2)">3 x (4 + Tt 4mm2)</option>
+                                <option value=" 3 x (6 + Tt 6mm2)">3 x (6 + Tt 6mm2)</option>
+                                <option value=" 3 x (10 + Tt 10mm2)">3 x (10 + Tt 10mm2)</option>
+                                <option value=" 3 x (16 + Tt 16mm2)">3 x (16 + Tt 16mm2)</option>
+                                <option value=" 3 x (25 + Tt 25mm2)">3 x (25 + Tt 25mm2)</option>
+                                <option value=" 3 x (35 + Tt 35mm2)">3 x (35 + Tt 35mm2)</option>
+                                <option value=" 3 x (50 + Tt 50mm2)">3 x (50 + Tt 50mm2)</option>
+                                <option value=" 3 x (70 + Tt 70mm2)">3 x (70 + Tt 70mm2)</option>
+                                <option value=" 3 x (95 + Tt 95mm2)">3 x (95 + Tt 95mm2)</option>
+                                <option value=" 3 x (120 + Tt 120mm2)">3 x (120 + Tt 120mm2)</option>
+                                 <option value=" 4 x (1.5 + Tt 1.5mm2)">4 x (1.5 + Tt 1.5mm2)</option>
+                                <option value=" 4 x (2.5 + Tt 2.5mm2)">4 x (2.5 + Tt 2.5mm2)</option>
+                                <option value=" 4 x (4 + Tt 4mm2)">4 x (4 + Tt 4mm2)</option>
+                                <option value=" 4 x (6 + Tt 6mm2)">4 x (6 + Tt 6mm2)</option>
+                                <option value=" 4 x (10 + Tt 10mm2)">4 x (10 + Tt 10mm2)</option>
+                                <option value=" 4 x (16 + Tt 16mm2)">4 x (16 + Tt 16mm2)</option>
+                                <option value=" 4 x (25 + Tt 25mm2)">4 x (25 + Tt 25mm2)</option>
+                                <option value=" 4 x (35 + Tt 35mm2)">4 x (35 + Tt 35mm2)</option>
+                                <option value=" 4 x (50 + Tt 50mm2)">4 x (50 + Tt 50mm2)</option>
+                                <option value=" 4 x (70 + Tt 70mm2)">4 x (70 + Tt 70mm2)</option>
+                                <option value=" 4 x (95 + Tt 95mm2)">4 x (95 + Tt 95mm2)</option>
+                                <option value=" 4 x (120 + Tt 120mm2)">4 x (120 + Tt 120mm2)</option>
+
+
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Aislamiento</label>
+                            <select id="supplyIsolation" class="intensity-selector">                               
+                                <option value="PVC 450/750V cu">PVC 450/750V cu</option>
+                                <option value="0.6/1KV XLPE Cu">0.6/1KV XLPE Cu</option>
+                                <option value="0.6/1KV XLPE Al">0.6/1KV XLPE Al</option>
+
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Normativa</label>
+                            <select id="supplyStandards" class="intensity-selector">                               
+                                <option value="Libre Alogenos">Libre Alogenos</option>
+                                <option value="REBT ITC-BT-07">REBT ITC-BT-07</option>
+                                <option value="NFC 15-100">NFC 15-100</option>
+                                <option value="IEC 60364-5-52">IEC 60364-5-52</option>
+
+                            </select>
+                    </div>
+
+                    
+                    </div>
+                    
+                    <!-- Propiedades para Magnetotérmico -->
+                    <div class="property-group breaker-props">
+                        <h5>Propiedades Magnetotérmico</h5>
+                        
+                        <div class="property-row">
+                            <label>Intensidad</label>
+                            <select id="breakerIntensity" class="intensity-selector" onchange="calcularPotenciaMagnetotermico()">                              
+                                <option value="6A">6A</option>
+                                <option value="10A">10A</option>
+                                <option value="16A">16A</option>
+                                <option value="20A">20A</option>
+                                <option value="25A">25A</option>
+                                <option value="32A">32A</option>
+                                <option value="40A">40A</option>
+                                <option value="50A">50A</option>
+                                <option value="63A">63A</option>
+                                <option value="80A">80A</option>
+                                <option value="100A">100A</option>
+                                <option value="125A">125A</option>
+                                <option value="150A">150A</option>
+                                <option value="200A">200A</option>
+                                <option value="150A">250A</option>
+                                <option value="300A">300A</option>
+                                <option value="350A">350A</option>                                
+								<option value="400A">400A</option>
+                                <option value="500A">500A</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Polaridad</label>
+                           <select id="breakerPolarity" class="intensity-selector" onchange="calcularPotenciaMagnetotermico()">                               
+                                <option value="1P">1P</option>
+                                <option value="2P">2P</option>
+                                <option value="3P">3P</option>
+                                <option value="4P">4P</option>                                
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Poder de corte</label>
+                            <select id="breakerCuttingPower" class="intensity-selector">                                
+                                <option value="Icu:6KA">6KA</option>
+                                <option value="Icu:15KA">15KA</option>
+                                <option value="Icu:20KA">20KA</option>
+                                <option value="Icu:25KA">25KA</option>
+                                <option value="Icu:30KA">30KA</option>
+                                <option value="Icu:36KA">36KA</option>
+                                <option value="Icu:40KA">40KA</option>
+                                <option value="Icu:45KA">45KA</option>
+                                <option value="Icu:50KA">50KA</option>
+                                <option value="Icu:70KA">70KA</option>
+                                <option value="Icu:100KA">100KA</option>
+                                <option value="Icu:150KA">150KA</option>
+                                <option value="Icu:200KA">200KA</option>
+                                <option value="Icu:250KA">250KA</option>
+                                <option value="Icu:300KA">300KA</option>
+                                <option value="Icu:350KA">350KA</option>
+                                <option value="Icu:400KA">400KA</option>
+                                <option value="Icu:500KA">500KA</option>
+                                <option value="Icu:600KA">600KA</option>
+                                <option value="Icu:700KA">700KA</option>
+                                <option value="Icu:800KA">800KA</option>
+                                <option value="Icu:900KA">900KA</option>
+                                <option value="Icu:1000KA">1000KA</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Curva</label>
+                            <select id="breakerCurve" class="intensity-selector">                               
+                                <option value="Curva:B">Curva:B</option>
+                                <option value="Curva:C">Curva:C</option>
+                                <option value="Curva:D">Curva:D</option>
+                                <option value="Curva:K">Curva:K</option>
+                                <option value="Curva:Z">Curva:Z</option>
+
+
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Sección</label>
+                            <select id="breakerSection" class="intensity-selector"> 
+                              
+                                <option value="">Calculo automático</option>
+                                
+                               
+                               
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Aislamiento</label>
+                            <select id="breakerIsolation" class="intensity-selector">                               
+                                <option value="PVC 450/750V H07V-K Cu">PVC 450/750V H07V-K</option>
+                                <option value="0.6/1KV XLPE RZ1-K Cu">0.6/1KV XLPE RZ1-K</option>
+                                <option value="0.6/1KV XLPE Al">0.6/1KV XLPE Al</option>
+
+                               
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Normativa</label>
+                            <select id="breakerStandards" class="intensity-selector">                               
+                                <option value="Libre Alogenos">Libre Alogenos</option>
+                                <option value="REBT ITC-BT-07">REBT ITC-BT-07</option>
+                                <option value="NFC 15-100">NFC 15-100</option>
+                                <option value="IEC 60364-5-52">IEC 60364-5-52</option>
+
+                            </select>
+                        </div>
+						
+						 <div class="property-row">
+                                 <label for="length">Longitud    </label>
+                                   <input type="text" id="length" placeholder="Ej. 15" value="15">
+                                </div>
+						 <div class="property-row">
+                               <label for="potencia">Potencia (W)</label>
+                                 <input type="number" id="potencia" value="1000" oninput="calcularBreakerAuto()" />
+                           </div> 
+                           <span id="calculoAutomaticoInfo" style="font-size:12px; color:#555;">(Potencia de cálculo automático)</span> 
+                            <div class="property-row">
+                              
+                                <label>Potencia soportada (W): </label>
+                              <span id="potenciaSoportada">1000</span>
+                             </div>
+               
+                        
+                        
+                        
+                       
+                        <div class="property-row">
+                            <div class="checkbox">
+                            <input type="checkbox" id="usarSeccionMinima" onchange="guardarPreferenciaSeccion(); calcularBreakerAuto()" />
+                            
+                            <label for="usarSeccionMinima">Usar sección mínima en lugar de recomendada</label>
+                            </div>
+                            </div>
+
+                            <div class="property-row">
+
+                            <h6>Marca</h6>                       
+                         <input type="text" id="propFatherText" placeholder="Descripción">
+                        
+                          </div>
+                          <div class="property-row">
+                          <input type="text" id="propFooterText" placeholder="Descripción">
+                            </div>
+ 
+                    </div>
+
+                    
+                    
+                    <!-- Propiedades para Diferencial -->
+                    <div class="property-group rcd-props">
+                        <h5>Propiedades Diferencial</h5>
+						 <div class="property-row">
+                            <label>donde? Fase:</label>
+                            <select id="rcdFase" class="intensity-selector">                             
+                             <option value="F1">F1</option>
+                            <option value="F2">F2</option>
+                             <option value="F3">F3</option>                                                           
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Intensidad</label>
+                            <select id="rcdIntensity" class="intensity-selector">                             
+                             <option value="25A">25A</option>
+                            <option value="40A">40A</option>
+                             <option value="63A">63A</option>
+                                <option value="80A">80A</option>
+                                <option value="100A">100A</option>
+                                <option value="125A">125A</option>
+                                <option value="150A">150A</option>
+                                <option value="175A">175A</option>
+                                <option value="200A">200A</option>                               
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Polaridad</label>
+                            <select id="rcdPolarity" class="intensity-selector">                                
+                                <option value="F+N">F+N</option>
+                                <option value="3F+N">3F+N</option>                               
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Clase</label>
+                            <select id="rcdClass" class="intensity-selector">                               
+                                <option value="Clase:AC">Clase:AC</option>
+                                <option value="Clase:A">Clase:A</option>
+                                <option value="Clase:F">Clase:F</option>
+                                <option value="Clase:B">Clase:B</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Sensibilidad</label>
+                            <select id="rcdSensitivity" class="intensity-selector">                               
+                                <option value="IAN:30ma">30ma</option>
+                                <option value="IAN:300ma">300ma</option>
+                                <option value="IAN:3000ma">3000ma</option>
+                            </select>
+                        </div>
+
+                        <div class="property-row">
+                            <label>Tipo</label>
+                            <select id="rcdType" class="intensity-selector">                               
+                                <option value="Instantaneo">Instantaneo</option>
+                                <option value="Retardado">Retardado</option>
+                                <option value="Selectivo">Selectivo</option>                              
+                               
+                            </select>
+                        </div>
+                            <div class="property-row">
+                                <label>Configuracion</label>
+                                <select id="rcdConfiguracion" class="intensity-selector">
+                                    <option value="Modular">Modular</option>
+                                    <option value="Relé + Toroidal">Relé + Toroidal</option>
+                                </select>
+                            </div>
+                             <div class="property-row">
+
+                            <h6>Fase</h6>                       
+                         <input type="text" id="propFatherText" placeholder="Descripción">
+                        
+                          </div>
+                           
+                    </div>
+                    
+                    <!-- Propiedades para Contactor -->
+                    <div class="property-group contactor-props">
+                        <h5>Propiedades Contactor</h5>
+                        <div class="property-row">
+                            <label>Intensidad</label>
+                            <select id="contactorIntensity" class="intensity-selector">                               
+                                <option value="In:6A">6A</option>
+                                <option value="In:10A">10A</option>
+                                <option value="In:16A">16A</option>
+                                <option value="In:20A">20A</option>
+                                <option value="In:25A">25A</option>
+                                <option value="In:32A">32A</option>
+                                <option value="In:40A">40A</option>
+                                <option value="In:50A">50A</option>
+                                <option value="In:63A">63A</option>
+                                <option value="In:80A">80A</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Polaridad</label>
+                            <select id="contactorPolarity" class="intensity-selector">                               
+                                <option value="1P">1P</option>
+                                <option value="2P">2P</option>
+                                <option value="3P">3P</option>
+                                <option value="4P">4P</option>
+                               
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Tensión Bobina</label>
+                            <select id="contactorCoilVoltage" class="intensity-selector">                                
+                                <option value="24V">24V</option>
+                                <option value="230V">230V</option>
+                                <option value="400V">400V</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Función</label>
+                            <select id="contactorFunction" class="intensity-selector">                                
+                                <option value="NA">Normalmente Abierto</option>
+                                <option value="NC">Normalmente Cerrado</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Propiedades para SAI/UPS -->
+                    <div class="property-group sai-props">
+                        <h5>Propiedades SAI/UPS</h5>
+                        <div class="property-row">
+                            <label>Potencia</label>
+                            <select id="saiPower" class="intensity-selector">                               
+                                <option value="500VA">500VA</option>
+                                <option value="1000VA">1000VA</option>
+                                <option value="1500VA">1500VA</option>
+                                <option value="2000VA">2000VA</option>
+                                <option value="3000VA">3000VA</option>
+                                <option value="5000VA">5000VA</option>
+                                <option value="10000VA">10000VA</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Tensión Entrada</label>
+                            <select id="saiInputVoltage" class="intensity-selector">                               
+                                <option value="230V">230V</option>
+                                <option value="400V">400V</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Tensión Salida</label>
+                            <select id="saiOutputVoltage" class="intensity-selector">                                
+                                <option value="230V">230V</option>
+                                <option value="400V">400V</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Autonomía</label>
+                            <select id="saiAutonomy" class="intensity-selector">                               
+                                <option value="5min">5 minutos</option>
+                                <option value="10min">10 minutos</option>
+                                <option value="15min">15 minutos</option>
+                                <option value="30min">30 minutos</option>
+                                <option value="1h">1 hora</option>
+                                <option value="2h">2 horas</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Propiedades para Batería de Condensadores -->
+                    <div class="property-group capacitor-props">
+                        <h5>Propiedades Batería Condensadores</h5>
+                        <div class="property-row">
+                            <label>Potencia</label>
+                            <select id="capacitorPower" class="intensity-selector">                               
+                                <option value="5kVAr">5 kVAr</option>
+                                <option value="10kVAr">10 kVAr</option>
+                                <option value="15kVAr">15 kVAr</option>
+                                <option value="20kVAr">20 kVAr</option>
+                                <option value="25kVAr">25 kVAr</option>
+                                <option value="30kVAr">30 kVAr</option>
+                                <option value="50kVAr">50 kVAr</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Tensión</label>
+                            <select id="capacitorVoltage" class="intensity-selector">                                
+                                <option value="230V">230V</option>
+                                <option value="400V">400V</option>
+                                <option value="690V">690V</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Nº Pasos</label>
+                            <select id="capacitorSteps" class="intensity-selector">                               
+                                <option value="6">6 pasos</option>
+                                <option value="8">8 pasos</option>
+                                <option value="10">10 pasos</option>
+                                <option value="12">12 pasos</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Regulación</label>
+                            <select id="capacitorRegulation" class="intensity-selector">                               
+                                <option value="cosφ">cosφ</option>
+                                <option value="tanφ">tanφ</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Propiedades para Transformador -->
+                    <div class="property-group transformer-props">
+                        <h5>Propiedades Transformador</h5>
+                        <div class="property-row">
+                            <label>Potencia</label>
+                            <select id="transformerPower" class="intensity-selector">                               
+                                <option value="100VA">100VA</option>
+                                <option value="250VA">250VA</option>
+                                <option value="500VA">500VA</option>
+                                <option value="1000VA">1000VA</option>
+                                <option value="1600VA">1600VA</option>
+                                <option value="2500VA">2500VA</option>
+                                <option value="4000VA">4000VA</option>
+                                <option value="6300VA">6300VA</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Tensión Primario</label>
+                            <select id="transformerPrimaryVoltage" class="intensity-selector">                                
+                                 <option value="220V">230V</option>
+                                <option value="230V">230V</option>
+                                 <option value="380V">230V</option>
+                                <option value="400V">400V</option>
+                                <option value="690V">690V</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Tensión Secundario</label>
+                            <select id="transformerSecondaryVoltage" class="intensity-selector">                               
+                                <option value="24V">24V</option>
+                                 <option value="220V">230V</option>
+                                <option value="230V">230V</option>
+                                 <option value="380V">230V</option>
+                                <option value="400V">400V</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Grupo de Conexión</label>
+                            <select id="transformerConnection" class="intensity-selector">                                
+                                <option value="Dy5">Dy5</option>
+                                <option value="Dy11">Dy11</option>
+                                <option value="Yy0">Yy0</option>
+                                <option value="Yd5">Yd5</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Propiedades para Seccionador -->
+                    <div class="property-group seccionador-props">
+                        <h5>Propiedades Seccionador</h5>
+                        <div class="property-row">
+                            <label>Intensidad</label>
+                             <select id="STIntensity" class="intensity-selector" onchange="calcularPotenciaMagnetotermico()">                              
+                                <option value="6A">6A</option>
+                                <option value="10A">10A</option>
+                                <option value="16A">16A</option>
+                                <option value="20A">20A</option>
+                                <option value="25A">25A</option>
+                                <option value="32A">32A</option>
+                                <option value="40A">40A</option>
+                                <option value="50A">50A</option>
+                                <option value="63A">63A</option>
+                                <option value="80A">80A</option>
+                                <option value="100A">100A</option>
+                                <option value="125A">125A</option>
+                                <option value="150A">150A</option>
+                                <option value="200A">200A</option>
+                                <option value="150A">250A</option>
+                                <option value="300A">300A</option>
+                                <option value="350A">350A</option>                                
+								<option value="400A">400A</option>
+                                <option value="500A">500A</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Polaridad</label>
+                            <select id="STPolarity" class="intensity-selector">                               
+                                <option value="1P">1P</option>
+                                <option value="2P">2P</option>
+                                <option value="3P">3P</option>
+                                <option value="4P">4P</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Poder de corte</label>
+                            <select id="seccionadorCuttingPower" class="intensity-selector">                                
+                                <option value="Pdc:6KA">6KA</option>
+                                <option value="Pdc:15KA">15KA</option>
+                                <option value="Pdc:20KA">20KA</option>
+                                <option value="Pdc:25KA">25KA</option>
+                                <option value="Pdc:30KA">30KA</option>
+                                <option value="Pdc:36KA">36KA</option>
+                                <option value="Pdc:40KA">40KA</option>
+                                <option value="Pdc:45KA">45KA</option>
+                                <option value="Pdc:50KA">50KA</option>
+                                <option value="Pdc:70KA">70KA</option>
+                                <option value="Pdc:100KA">100KA</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Tensión</label>
+                            <select id="seccionadorVoltage" class="intensity-selector">                                
+                                 <option value="220V">220V</option>
+                                <option value="230V">230V</option>
+                                 <option value="380V">380V</option>
+                                <option value="400V">400V</option>
+                                <option value="690V">690V</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Contact Type</label>
+                            <select id="ContactType" class="intensity-selector">                               
+                                <option value="3 NO">3 NO </option>
+                                <option value="3 NO + 1 NC">3 NO + 1 NC</option>
+                                <option value="4 NO">4 NO</option>
+                            </select>
+                        </div>
+                            <div class="property-row">
+                                <label>Frecuencia</label>
+                                <select id="Frecuencia" class="intensity-selector">
+                                    <option value="50Hz">50Hz</option>
+                                    <option value="60Hz">60Hz</option>
+                                    <option value="50/60Hz">50/60Hz</option>
+                                </select>
+                                </div>
+
+                           
+
+                    </div>
+                    
+                    <!-- Propiedades para Sobretensiones -->
+                    <div class="property-group overtension-props">
+                      
+                        <div class="property-row">
+                            <label>Tipo:</label>
+                            <select id="TipoST" class="intensity-selector">                               
+                                <option value="tipo:1+2">1+2</option>
+                                <option value="tipo:1">1</option>
+                                <option value="tipo:2">2</option>
+                                <option value="tipo:3">3</option>
+
+                            </select>
+                        </div>						
+                    
+                        <div class="property-row">
+                            <label>I.Max.descarga:</label>
+                            <select id="maximaDescarga" class="intensity-selector">                                
+                                <option value="Md:100KA">100KA</option>
+                                <option value="Md:80KA">80KA</option>
+                                <option value="Md:50KA">50KA</option>
+                            </select>
+                        </div>
+                        
+                        <div class="property-row">
+                            <label>Nivel de Protección:</label>
+                            <select id="Protection" class="intensity-selector">                                
+                                <option value="Np:1.5kV">1.5kV</option>
+                                <option value="Np:2.5kV">2.5kV</option>
+                                <option value="Np:4kV">4kV</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Polaridad St:</label>
+                            <select id="PolaridadST" class="intensity-selector">                                
+                                <option value="P:1P">1P</option>
+                                <option value="P:2P">2P</option>
+                                <option value="P:3P">3P</option>
+                                <option value="P:4P">4P</option>
+                            </select>
+                        </div>
+                        
+
+                    </div>
+                    
+                    <!-- Propiedades para Temporizador/Relé -->
+                    <div class="property-group timer-props">
+                        <h5>Propiedades Temporizador</h5>
+                        <div class="property-row">
+                            <label>Función</label>
+                            <select id="timerFunction" class="intensity-selector">                               
+                                <option value="ON-Delay">ON-Delay</option>
+                                <option value="OFF-Delay">OFF-Delay</option>
+                                <option value="Intervalo">Intervalo</option>
+                                <option value="Parpadeo">Parpadeo</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Rango Temporización</label>
+                            <select id="timerRange" class="intensity-selector">                                
+                                <option value="0.1s-30s">0.1s - 30s</option>
+                                <option value="1s-5min">1s - 5min</option>
+                                <option value="10s-30min">10s - 30min</option>
+                                <option value="1min-3h">1min - 3h</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Tensión Alimentación</label>
+                            <select id="timerVoltage" class="intensity-selector">                                
+                                <option value="24V DC">24V DC</option>
+                                <option value="24V AC">24V AC</option>
+                                <option value="230V AC">230V AC</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Contactos</label>
+                            <select id="timerContacts" class="intensity-selector">                               
+                                <option value="1CO">1CO</option>
+                                <option value="1CO+1CC">1CO+1CC</option>
+                                <option value="2CO">2CO</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Propiedades para Contador -->
+                    <div class="property-group counter-props">
+                        <h5>Propiedades Contador</h5>
+                        <div class="property-row">
+                            <label>Tipo</label>
+                            <select id="counterType" class="intensity-selector">                                
+                                <option value="Energía">Energía</option>
+                                <option value="Impulsos">Impulsos</option>
+                                <option value="Horas">Horas de funcionamiento</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Tensión</label>
+                            <select id="counterVoltage" class="intensity-selector">                               
+                                 <option value="220V">220V</option>
+                                <option value="230V">230V</option>
+                                 <option value="380V">380V</option>
+                                <option value="400V">400V</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Frecuencia</label>
+                            <select id="counterFrequency" class="intensity-selector">                               
+                                <option value="50Hz">50Hz</option>
+                                <option value="60Hz">60Hz</option>
+                                <option value="50/60Hz">50/60Hz</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Salida</label>
+                            <select id="counterOutput" class="intensity-selector">                                
+                                <option value="Relé">Relé</option>
+                                <option value="Transistor">Transistor</option>
+                                <option value="RS485">RS485</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Propiedades para Conmutador -->
+                    <div class="property-group switch-props">
+                        <h5>Propiedades Conmutador</h5>
+                        <div class="property-row">
+                            <label>Intensidad</label>
+                            <select id="switchIntensity" class="intensity-selector">                               
+                                <option value="10A">10A</option>
+                                <option value="16A">16A</option>
+                                <option value="20A">20A</option>
+                                <option value="25A">25A</option>
+                                <option value="32A">32A</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Tensión</label>
+                            <select id="switchVoltage" class="intensity-selector">                                
+                                 <option value="220V">230V</option>
+                                <option value="230V">230V</option>
+                                 <option value="380V">230V</option>
+                                <option value="400V">400V</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Nº Posiciones</label>
+                            <select id="switchPositions" class="intensity-selector">                               
+                                <option value="2">2 posiciones</option>
+                                <option value="3">3 posiciones</option>
+                                <option value="4">4 posiciones</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Mando</label>
+                            <select id="switchControl" class="intensity-selector">                               
+                                <option value="Manual">Manual</option>
+                                <option value="Motorizado">Motorizado</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Propiedades para Grupo -->
+                    <div class="property-group group-props">
+                        <h5>Propiedades Grupo</h5>
+                        <div class="property-row">
+                            <label>Nº Circuitos</label>
+                            <select id="groupCircuits" class="intensity-selector">                               
+                                <option value="2">2 circuitos</option>
+                                <option value="3">3 circuitos</option>
+                                <option value="4">4 circuitos</option>
+                                <option value="6">6 circuitos</option>
+                                <option value="8">8 circuitos</option>
+                                <option value="12">12 circuitos</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Intensidad Total</label>
+                            <select id="groupTotalIntensity" class="intensity-selector">                               
+                                <option value="25A">25A</option>
+                                <option value="40A">40A</option>
+                                <option value="63A">63A</option>
+                                <option value="100A">100A</option>
+                                <option value="125A">125A</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Protección</label>
+                            <select id="groupProtection" class="intensity-selector">                                
+                                <option value="Magnetotérmico">Magnetotérmico</option>
+                                <option value="Diferencial">Diferencial</option>
+                                <option value="Ambos">Ambos</option>
+                            </select>
+                        </div>
+                        <div class="property-row">
+                            <label>Grado de Protección</label>
+                            <select id="groupProtectionDegree" class="intensity-selector">                               
+                                <option value="IP20">IP20</option>
+                                <option value="IP40">IP40</option>
+                                <option value="IP54">IP54</option>
+                                <option value="IP65">IP65</option>
+                            </select>
+                        </div>
+						
+                    </div>
+
+                    
+    </div>  
+                    
+                    <!-- Propiedades generales de apariencia -->
+                    <div class="property-group appearance-props">
+						
+                        <h5>Descripción</h5>                        
+                        <input type="text" id="propFooterText" placeholder="Descripción">
+                        <h6>Potencia</h6>                        
+                        <input type="text" id="propFooterText2" placeholder="carga" readonly>
+                       
+
+
+                       
+                    
+                        <h5>Apariencia</h5>
+                        <div class="property-row">
+                            <label>Color Texto:</label>
+                            <input type="color" id="propTextColor" value="#FFFFFF">
+                        </div>
+                        <div class="property-row">
+                            <label>Tamaño Fuente:</label>
+                            <select id="propFontSize">
+                                <option value="8px">8px</option>
+                                <option value="10px" selected>Normal</option>
+                                <option value="12px">Grande</option>
+                            </select>
+                        </div>
+                    </div>
+				 
+            </div>
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+              <div class="properties-modal-footer">
+                 <button id="addComponentBtn" class="btn btn-primary">Añadir</button>
+                  <button id="updatePropertiesBtn" class="btn btn-secondary">Actualizar</button>
+                <button class="close" id="closePropertiesModal">Close</button>
+   
+                <!-- <button class="close" id="cancelPropertiesModal">&times;</button>-->
+               
+            </div>
+         </div>
+                    
+                   
+		
+        
+        
+        <!-- Panel de capas (oculto inicialmente) -->
+        <div class="layers-panel" id="layersPanel" style="display: none;">
+            <div class="panel-header">
+                <span>Capas</span>
+                <button class="btn btn-icon" id="addLayerBtn">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            <div class="panel-content" id="layersList">
+                <!-- Las capas se añadirán aquí dinámicamente -->
+            </div>
+        </div>
+        
+        <!-- Modal de confirmación -->
+        <div class="modal" id="confirmModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span id="modalTitle">Confirmación</span>
+                    <button class="btn btn-icon" id="closeModal">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+                <div class="modal-body" id="modalMessage">
+                    ¿Estás seguro de que quieres realizar esta acción?
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" id="cancelModal">Cancelar</button>
+                    <button class="btn btn-danger" id="confirmModalBtn">Confirmar</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal para importar/exportar -->
+        <div class="modal" id="fileModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span id="fileModalTitle">Importar/Exportar</span>
+                    <button class="btn btn-icon" id="closeFileModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body" id="fileModalBody">
+                    <textarea id="fileData" style="width: 100%; height: 300px; font-family: monospace;"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" id="cancelFileModal">Cancelar</button>
+                    <button class="btn btn-primary" id="confirmFileModal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    
+		 <!-- Indicador de doble clic -->
+        <div class="double-click-hint" id="doubleClickHint">
+            <i class="fas fa-info-circle"></i> Doble clic para editar propiedades
+        </div>
+	</div>
+	
+	<div id="resultadoModal" class="modalnew"></div>
+
+
+    
+   
+    <!-- Dependencias y scripts: orden seguro + stub para exportarMemoriaTecnicaPDF -->
+    <script>
+        // Stub seguro: evita ReferenceError si se llama antes de que exportar_memoria_pdf.js se cargue.
+        window.exportarMemoriaTecnicaPDF = window.exportarMemoriaTecnicaPDF || function() {
+            console.warn('exportarMemoriaTecnicaPDF: stub activo (script no cargado aún).');
+            alert('Función "Memoria PDF" no cargada aún. Recarga la página si persiste.');
+        };
+    </script>
+
+    <!-- Cargar jsPDF y html2canvas desde CDN (usar una sola versión) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Scripts de la aplicación (exportar_memoria_pdf debe cargarse antes de app.js) -->
+    <script src="script/validacion_rebt.js"></script>
+    <script src="script/exportar_memoria_pdf.js"></script>
+    <script src="script/app.js"></script>
+    
+</body>
+</html>
