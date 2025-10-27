@@ -60,7 +60,7 @@
     {
       "src": "images/screenshot3.png",
       "type": "image/png",
-      "sizes": "430x932",
+      "sizes": "932x430",
       "form_factor": "narrow",
       "label": "Vista móvil del editor"
     }
