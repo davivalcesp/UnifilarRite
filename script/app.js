@@ -1447,7 +1447,7 @@ function setupEventListeners() {
 
 function activarModoAcoplado(nuevoElemento) {
   nuevoElemento.style.position = 'absolute';
-  nuevoElemento.style.pointerEvents = 'none'; // evita interferencias
+  nuevoElemento.style.pointerEvents = 'none';
   document.body.appendChild(nuevoElemento);
 
   function moverConRaton(e) {
@@ -1457,16 +1457,42 @@ function activarModoAcoplado(nuevoElemento) {
 
   document.addEventListener('mousemove', moverConRaton);
 
-  // Detectar zona de desacople
-  document.addEventListener('click', function desacoplar(e) {
+  function desacoplar(e) {
     const output = document.elementFromPoint(e.clientX, e.clientY);
+
     if (output && output.classList.contains('output')) {
       nuevoElemento.style.pointerEvents = 'auto';
       document.removeEventListener('mousemove', moverConRaton);
       document.removeEventListener('click', desacoplar);
+    } else {
+      // ✨ Efecto visual: parpadeo rojo
+      nuevoElemento.style.transition = 'box-shadow 0.2s';
+      nuevoElemento.style.boxShadow = '0 0 10px red';
+      setTimeout(() => {
+        nuevoElemento.style.boxShadow = 'none';
+      }, 300);
+
+      // 💬 Mensaje temporal
+      const aviso = document.createElement('div');
+      aviso.textContent = 'Haz clic sobre una zona válida para desacoplar';
+      aviso.style.position = 'fixed';
+      aviso.style.top = '10px';
+      aviso.style.left = '50%';
+      aviso.style.transform = 'translateX(-50%)';
+      aviso.style.background = '#f44336';
+      aviso.style.color = 'white';
+      aviso.style.padding = '8px 16px';
+      aviso.style.borderRadius = '4px';
+      aviso.style.zIndex = '1000';
+      document.body.appendChild(aviso);
+      setTimeout(() => aviso.remove(), 2000);
     }
-  });
+  }
+
+  document.addEventListener('click', desacoplar);
 }
+
+
 
 
     
@@ -1911,31 +1937,51 @@ function drawInfoIndicator(context, x, y, opacity) {
 // Termina INDICADORES TEMPORALES
 // =============================================
 
-
 function stopDrawing(e) {
     const { x, y } = getCanvasCoordinates(e);
 
-   // ✅ MODO DRAG & DROP - SOLTAR COMPONENTE NUEVO
-     if (currentTool === 'dragNewComponent' && pendingComponent) {
+    // ✅ MODO DRAG & DROP - SOLTAR COMPONENTE NUEVO
+    if (currentTool === 'dragNewComponent' && pendingComponent) {
         console.log('🔄 Soltando componente en modo dragNewComponent');
-        
+
+        // ✅ Verificar si está en zona de conexión válida
+        if (!window.enZonaAutoConexion) {
+            updateStatus('❌ No se puede colocar: el componente debe estar cerca de un punto de salida válido.');
+            return;
+        }
+
+        // ✅ Verificar si ya está conectado a ese origen (evitar duplicados)
+        const inputPoint = pendingComponent.connectionPoints.find(p => p.type === 'input');
+        if (inputPoint) {
+            const yaConectado = connections.some(c =>
+                c.from.component === window.componenteAutoConexion &&
+                c.from.point === window.puntoAutoConexion &&
+                c.to.component === pendingComponent
+            );
+
+            if (yaConectado) {
+                updateStatus('⚠️ Este componente ya está conectado a esa salida.');
+                return;
+            }
+        }
+
         // Verificar que la posición sea válida
         let isValidPosition = true;
-        
+
         // Comprobar solapamiento con otros componentes
-         for (const obj of canvasObjects) {
-            if (obj.type === 'component' && 
+        for (const obj of canvasObjects) {
+            if (obj.type === 'component' &&
                 obj !== pendingComponent &&
                 obj.x < pendingComponent.x + pendingComponent.width &&
                 obj.x + obj.width > pendingComponent.x &&
                 obj.y < pendingComponent.y + pendingComponent.height &&
                 obj.y + obj.height > pendingComponent.y) {
-                
+
                 const overlapArea = Math.max(0, Math.min(pendingComponent.x + pendingComponent.width, obj.x + obj.width) - Math.max(pendingComponent.x, obj.x)) *
-                                  Math.max(0, Math.min(pendingComponent.y + pendingComponent.height, obj.y + obj.height) - Math.max(pendingComponent.y, obj.y));
-                
+                                    Math.max(0, Math.min(pendingComponent.y + pendingComponent.height, obj.y + obj.height) - Math.max(pendingComponent.y, obj.y));
+
                 const minArea = Math.min(pendingComponent.width * pendingComponent.height, obj.width * obj.height);
-                
+
                 if (overlapArea > minArea * 0.3) {
                     isValidPosition = false;
                     updateStatus('❌ Posición no válida: solapamiento con otro componente.');
@@ -1943,111 +1989,79 @@ function stopDrawing(e) {
                 }
             }
         }
-        
-         if (isValidPosition) {
-             console.log('✅ Posición válida, procediendo con auto-conexión...');
-              detectarZonaAutoConexion(pendingComponent, x, y);
-            // ✅ PRIMERO: AUTO-CONEXIÓN SI ESTÁ EN ZONA
-            console.log('🔍 Estado de auto-conexión:', window.enZonaAutoConexion);
 
+        if (isValidPosition) {
+            console.log('✅ Posición válida, procediendo con auto-conexión...');
+            detectarZonaAutoConexion(pendingComponent, x, y);
 
             let fueConectado = false;
-            
-           // ✅ AUTO-CONEXIÓN SI ESTÁ EN ZONA
 
             if (window.enZonaAutoConexion && pendingComponent.type === 'component' && pendingComponent.connectionPoints) {
                 const inputPoint = pendingComponent.connectionPoints.find(p => p.type === 'input');
                 if (inputPoint) {
                     const inputX = pendingComponent.x + inputPoint.x;
                     const inputY = pendingComponent.y + inputPoint.y;
-                    
-                    console.log('🔌 Intentando conectar:', {
-                        desde: window.componenteAutoConexion?.componentId,
-                        hacia: pendingComponent.componentId
-                    });
-                    
-                    // Ver si ya existe conexión a ese output
-                    const yaConectados = connections.filter(c => 
-                        c.from.component === window.componenteAutoConexion && 
-                        c.from.point === window.puntoAutoConexion
-                    );
-                    
-                    // Si no está conectado, conectar
-                    if (!yaConectados.some(c => c.to.component === pendingComponent)) {
-                        const nuevaConexion = {
-                            from: { 
-                                component: window.componenteAutoConexion, 
-                                point: window.puntoAutoConexion 
-                            },
-                            to: { 
-                                component: pendingComponent, 
-                                point: inputPoint 
-                            },
-                            color: currentColor,
-                            width: currentLineWidth,
-                            lineType: currentLineType,
-                            layerId: currentLayerId
-                        };
-                        
-                        connections.push(nuevaConexion);
-                        fueConectado = true;
-                        
-                        console.log('✅ Conexión automática establecida:', nuevaConexion);
-                        updateStatus('¡Componente conectado automáticamente al soltarlo!');
 
-                        // ✅ MOSTRAR INDICADOR DE "CONECTADO"
-                        setTimeout(() => {
-                            showTemporaryIndicator(inputX, inputY, 'connected', 1500);
-                        }, 100);
-                    } else {
-                        console.log('ℹ️ Ya existe una conexión entre estos componentes');
-                    }
+                    const nuevaConexion = {
+                        from: {
+                            component: window.componenteAutoConexion,
+                            point: window.puntoAutoConexion
+                        },
+                        to: {
+                            component: pendingComponent,
+                            point: inputPoint
+                        },
+                        color: currentColor,
+                        width: currentLineWidth,
+                        lineType: currentLineType,
+                        layerId: currentLayerId
+                    };
+
+                    connections.push(nuevaConexion);
+                    fueConectado = true;
+
+                    console.log('✅ Conexión automática establecida:', nuevaConexion);
+                    updateStatus('¡Componente conectado automáticamente al soltarlo!');
+
+                    setTimeout(() => {
+                        showTemporaryIndicator(inputX, inputY, 'connected', 1500);
+                    }, 100);
                 }
             }
-           
-            // ✅ SEGUNDO: AÑADIR EL COMPONENTE AL CANVAS
+
             canvasObjects.push(pendingComponent);
             selectedObject = pendingComponent;
-            
             saveState();
             redrawCanvas();
             renderObjectsList();
-            
+
             if (fueConectado) {
                 calcularSumasRCD();
                 updateStatus('Componente colocado y conectado automáticamente.');
             } else {
                 updateStatus('Componente colocado correctamente.');
             }
-            
         } else {
             updateStatus('Posición no válida: solapamiento excesivo con otro componente.');
-            // ❌ NO limpiar pendingComponent aquí para permitir reposicionamiento
             return;
         }
-        
-        // ✅ LIMPIAR ESTADO Y VOLVER A MODO MOVE
+
         pendingComponent = null;
         currentTool = 'move';
         updateToolUI('move');
         window.enZonaAutoConexion = false;
-        
         console.log('🔄 Volviendo a modo move');
         return;
     }
 
-   
-
-            
-            
-
+    // ✅ DIBUJO DE LÍNEAS Y ELIPSES
     if ((currentTool === 'draw' || currentTool === 'ellipse') && isDrawing) {
         const snappedX = snapToGridCoordinate(x);
         const snappedY = snapToGridCoordinate(y);
         const alignedStartX = snapToGridCoordinate(startX);
         const alignedStartY = snapToGridCoordinate(startY);
+
         if (currentTool === 'draw') {
-            // Crear nueva línea
             const newLine = {
                 type: 'line',
                 x1: alignedStartX,
@@ -2061,7 +2075,6 @@ function stopDrawing(e) {
             };
             canvasObjects.push(newLine);
         } else if (currentTool === 'ellipse') {
-            // Crear nueva elipse
             const centerX = (startX + snappedX) / 2;
             const centerY = (startY + snappedY) / 2;
             const radiusX = Math.abs(snappedX - startX) / 2;
@@ -2079,28 +2092,32 @@ function stopDrawing(e) {
             };
             canvasObjects.push(newEllipse);
         }
+
         isDrawing = false;
         saveState();
         redrawCanvas();
+        return;
+    }
 
-    } else if (currentTool === 'move' && isDragging) {
-        // ✅ AUTO-CONEXIÓN AL SOLTAR OBJETO EN MODO MOVE
+    // ✅ MODO MOVE - SOLTAR OBJETO
+    if (currentTool === 'move' && isDragging) {
         let fueConectado = false;
-        
+
         if (window.enZonaAutoConexion && selectedObject && selectedObject.type === 'component' && selectedObject.connectionPoints) {
             const inputPoint = selectedObject.connectionPoints.find(p => p.type === 'input');
             if (inputPoint) {
                 const inputX = selectedObject.x + inputPoint.x;
                 const inputY = selectedObject.y + inputPoint.y;
-                
-                // Ver si ya existe conexión a ese output
-                const yaConectados = connections.filter(c => 
-                    c.from.component === window.componenteAutoConexion && 
-                    c.from.point === window.puntoAutoConexion
+
+                const yaConectado = connections.some(c =>
+                    c.from.component === window.componenteAutoConexion &&
+                    c.from.point === window.puntoAutoConexion &&
+                    c.to.component === selectedObject
                 );
-                
-                // Si no está conectado, conectar
-                if (!yaConectados.some(c => c.to.component === selectedObject)) {
+
+                if (yaConectado) {
+                    updateStatus('⚠️ Este componente ya está conectado a esa salida.');
+                } else {
                     connections.push({
                         from: { component: window.componenteAutoConexion, point: window.puntoAutoConexion },
                         to: { component: selectedObject, point: inputPoint },
@@ -2110,13 +2127,10 @@ function stopDrawing(e) {
                         layerId: currentLayerId
                     });
                     fueConectado = true;
-                    updateStatus('¡Objeto conectado automáticamente al soltarlo!');
-
-                    // ✅ MOSTRAR INDICADOR DE "CONECTADO" DESPUÉS DE CONECTAR
+                    updateStatus('✅ Objeto conectado automáticamente al soltarlo.');
                     setTimeout(() => {
                         showTemporaryIndicator(inputX, inputY, 'connected', 1500);
                     }, 100);
-
                     calcularSumasRCD();
                 }
             }
@@ -2124,17 +2138,36 @@ function stopDrawing(e) {
 
         isDragging = false;
         saveState();
-        
-        if (fueConectado) {
-            redrawCanvas(); // Redibujar para mostrar la nueva conexión
-        }
-    } else if (currentTool === 'connect' && isConnecting) {
-        // ... código existente para connect ...
+        if (fueConectado) redrawCanvas();
+        return;
     }
-    
-    // Limpiar estado de auto-conexión
+
+    // ✅ MODO CONECTAR
+    if (currentTool === 'connect' && isConnecting && currentConnection) {
+        const connectionPoint = getConnectionPointAtPosition(x, y);
+        if (connectionPoint) {
+            currentConnection.to = connectionPoint;
+            connections.push({
+                from: currentConnection.from,
+                to: currentConnection.to,
+                color: currentColor,
+                width: currentLineWidth,
+                lineType: currentLineType,
+                layerId: currentLayerId
+            });
+        }
+
+        isConnecting = false;
+        currentConnection = null;
+        saveState();
+        redrawCanvas();
+        return;
+    }
+
+    // ✅ LIMPIAR ESTADO DE AUTO-CONEXIÓN
     window.enZonaAutoConexion = false;
 }
+
 
 
 
@@ -4016,8 +4049,8 @@ function drawCanvasWithoutImages(ctx) {
             ctx.beginPath();
             ctx.moveTo(obj.x1, obj.y1);
             ctx.lineTo(obj.x2, obj.y2);
-            ctx.strokeStyle = obj.color || '#000000';
-            ctx.lineWidth = obj.width || 2;
+            ctx.strokeStyle = obj.color || '#5f5d5dff';
+            ctx.lineWidth = obj.width || 1;
             ctx.stroke();
         }
     });
@@ -4460,7 +4493,7 @@ function renderObjectsList() {
         const item = document.createElement('div');
         item.className = 'object-list-item' + (obj === selectedObject ? ' selected' : '');
         item.innerHTML = `
-            <span style="cursor:pointer;">${compInfo ? compInfo.name : obj.componentId}</span>
+            <span style="cursor:pointer;">${idx + 1}.${compInfo ? compInfo.name : obj.componentId}</span>
             <button class="edit-btn" title="Editar">&#9998;</button>
             <button class="delete-btn" title="Eliminar">&#128465;</button>
         `;
